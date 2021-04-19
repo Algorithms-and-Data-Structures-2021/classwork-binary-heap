@@ -1,1 +1,11 @@
-# C++ CMake project template
+# Binary Heap
+
+## Operations
+1. `Insert(key)` добавление элемента (ключа) в кучу.
+2. `Remove(index)` - удаление элемента (ключа) из кучи по индексу.
+3. `Extract(index)` - получение (с удалением) минимального или максимального элемента.
+
+## Tasks
+
+1. Реализуйте Max-heap.
+2. Реализуйте метод `index Search(key)`.
