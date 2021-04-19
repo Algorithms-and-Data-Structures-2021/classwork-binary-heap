@@ -22,5 +22,11 @@ int main(int argc, char **argv) {
 
   std::cout << heap << std::endl;
 
+  const auto key = heap.Extract();
+
+  std::cout << key.value_or(-1) << std::endl;
+
+  std::cout << heap << std::endl;
+
   return 0;
 }

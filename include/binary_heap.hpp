@@ -8,92 +8,58 @@
 
 namespace itis {
 
-struct MinBinaryHeap final {
+struct BinaryHeap {
+  virtual ~BinaryHeap() = default;
 
-  explicit MinBinaryHeap(int capacity) : capacity_{capacity} {
-    data_ = new int[capacity_]{}; // [0, 0, ..., 0]
-  }
+  virtual void Insert(int key) = 0;
+  virtual std::optional<int> Extract() = 0;
+  virtual void Remove(int key) = 0;
+  virtual bool IsEmpty() const = 0;
+};
 
-  void Insert(int key) {
-    if (size_ == capacity_) {
-      throw std::runtime_error("Heap has reached max capacity");
-    }
-
-    // insert element to the rightmost free space in the array
-    int index = size_;
-    data_[index] = key;
-    size_++;
-
-    siftUp(index);
-  }
-
-  std::optional<int> Extract() {
-    if (size_ == 0) {
-      return std::nullopt;
-    }
-
-    const int root = data_[0];
-
-    if (size_ == 1) {
-      size_--;
-      data_[0] = std::numeric_limits<int>::max();
-      return root;
-    }
-
-    data_[0] = data_[size_ - 1];
-    data_[size_ - 1] = std::numeric_limits<int>::max();
-    size_--;
-    heapify(0);
-    return root;
-  }
-
-  void Remove(int index) {
-    data_[index] = std::numeric_limits<int>::min();
-    siftUp(index);
-    Extract();
-  }
-
-  // TODO: Search(key) => index, Remove(key)
-
+struct MinBinaryHeap : BinaryHeap {
 private:
-  int *data_{nullptr};
-
   int size_{0};
   int capacity_{0};
+  int *data_{nullptr};
 
-  void siftUp(int index) {
-    while (index != 0 && data_[parentId(index)] > data_[index]) {
-      std::swap(data_[index], data_[parentId(index)]);
-      index = parentId(index);
-    }
-  }
+public:
+  explicit MinBinaryHeap(int capacity);
 
-  void heapify(int index) {
-    const int left = leftId(index);
-    const int right = rightId(index);
-    int smallest = index;
+  void Insert(int key) override;
 
-    if (left < size_ && data_[left] < data_[index]) {
-      smallest = left;
-    }
+  std::optional<int> Extract() override;
 
-    if (right < size_ && data_[right] < data_[smallest]) {
-      smallest = right;
-    }
+  void Remove(int key) override;
 
-    if (smallest != index) {
-      std::swap(data_[index], data_[smallest]);
-      heapify(smallest);
-    }
-  }
+  bool IsEmpty() const override;
 
-  static int leftId(int node_id) { return node_id * 2 + 1; }
+private:
+  void siftUp(int index);
 
-  static int rightId(int node_id) { return leftId(node_id) + 1; }
+  void heapify(int index);
 
-  static int parentId(int node_id) { return (node_id - 1) / 2; }
+  void remove(int index);
 
+  int search(int key) const;
+
+  // static methods
+  static int parentId(int index);
+
+  static int leftId(int index);
+  static int rightId(int index);
+
+  // output operator
   friend std::ostream &operator<<(std::ostream &, const MinBinaryHeap &);
 };
+
+inline std::ostream &operator<<(std::ostream &os, const MinBinaryHeap &heap) {
+  for (int index = 0; index < heap.size_ - 1; index++) {
+    os << heap.data_[index] << '\t';
+  }
+
+  os << heap.data_[heap.size_ - 1] << '\n';
+  return os;
+}
 
 } // namespace itis
